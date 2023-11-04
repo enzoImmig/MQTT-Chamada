@@ -1,0 +1,21 @@
+author: Enzo Immig
+MQTT CHAMADA - Disciplina de sistemas microprocessados II - 4411
+
+briefing:
+projeto com foco no protocolo de comunicação MQTT e transmissão de dados com criptografia JSON 
+proposto pelo professor Marcos Zuccolotto
+
+este código fonte será desenvolvido da seguinte maneira:
+
+criptografia: usando a biblioteca JSON, transformar JSON em biblioteca python e vice versa
+      função dumps converte para json
+      função load converte para dicionario python
+comunicação: usando a biblioteca PAHO MQTT, para fazer pub e sub.
+      abre conexao com o broker
+      subscribe e verifica o tópico desejado
+      quando uma matricula especifica é detectada chama a função de ack
+      publica a resposta
+tratamento de dados: filtro pela matricula e preenchimento dos campos necessários
+      converte o JSON para o formato de dicionario python
+      procura pelo nome, ex. 'matricula' e checa o valor
+      depois cria outro dicionario python com a resposta e converte para JSON
