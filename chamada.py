@@ -3,9 +3,9 @@ from paho.mqtt import client as mqtt_client
 import time
 
 #parametros de conexão TCP
-host = 'localhost'
+host = 'test.mosquitto.org'
 port = 1883
-topic = 'mqttest'
+topic = 'Liberato/iotTro/4411/data'
 client_id = '20000216'
 topic_ack = 'mqttest_ack'
 
@@ -49,14 +49,16 @@ def connect_mqtt():
 def subscribe(client: mqtt_client):
     # redefinição da função de callback de quando recebe uma mensagem
     def on_message(client, userdata, msg):
+        print(msg.payload.decode())
         if(is_json(msg.payload.decode())): # verifica se a string recebida é um JSON
-            msg_dicpy = json.loads(msg.payload.decode()) # decode from binary e converte para dicionario python
-            print(f"Matricula recebida é ({msg_dicpy['matricula']})")
+            print(json.loads(msg.payload.decode()))
+            #msg_dicpy = json.loads(msg.payload.decode()) # decode from binary e converte para dicionario python
+            #print(f"Matricula recebida é ({msg_dicpy['matricula']})")
 
-            if(msg_dicpy['matricula'] == "20000216"):
-                print(f"Minha matricula foi recebida ({msg_dicpy['matricula']})")
+            #if(msg_dicpy['matricula'] == "20000216"):
+            #   print(f"Minha matricula foi recebida ({msg_dicpy['matricula']})")
                 # ack
-                client.publish(topic_ack, ack())
+            #  client.publish(topic_ack, ack())
 
     # faz efetivamente a inscrição no tópico
     client.subscribe(topic)
