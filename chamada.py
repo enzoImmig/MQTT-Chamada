@@ -4,10 +4,13 @@ import time
 
 #parametros de conexão TCP
 host = 'test.mosquitto.org'
+#host = 'localhost'
 port = 1883
-topic = 'Liberato/iotTro/4411/data'
+topic = 'Liberato/iotTro/44xx/data'
+#topic = 'teste'
 client_id = '20000216'
-topic_ack = 'mqttest_ack'
+topic_ack = 'Liberato/iotTro/44xx/rply/20000216'
+#topic_ack = 'teste/ack'
 
 def is_json(str):
     try:
@@ -17,12 +20,20 @@ def is_json(str):
     return True
 
 # função pra construir a resposta em JSON
-def ack():
-    resp = dict()
-    resp.update({'nome': "Enzo"})
-    resp.update({'matricula': "20000216"})
-    resp.update({'msg': "Funcionou!"})
-    return json.dumps(resp)
+def ack(mesg):
+    mesg['seq'] = int(mesg['seq']) + 800000
+    mesg['nome'] = "Enzo Immig"
+    mesg['turma'] = 4411
+    if mesg['tempExt']['valor'] > mesg['tempExt']['valor']:
+        mesg['climatizado'] = "SIM"
+    else:
+        mesg['climatizado'] = "NAO"
+    del mesg['tempExt']
+    del mesg['tempInt']
+    del mesg['umidade']
+
+    print("Resposta enviada!")
+    return json.dumps(mesg)
 
 #função para estabelecer conexao com o broker
 def connect_mqtt():
@@ -49,16 +60,17 @@ def connect_mqtt():
 def subscribe(client: mqtt_client):
     # redefinição da função de callback de quando recebe uma mensagem
     def on_message(client, userdata, msg):
-        print(msg.payload.decode())
         if(is_json(msg.payload.decode())): # verifica se a string recebida é um JSON
-            print(json.loads(msg.payload.decode()))
-            #msg_dicpy = json.loads(msg.payload.decode()) # decode from binary e converte para dicionario python
-            #print(f"Matricula recebida é ({msg_dicpy['matricula']})")
+            #print(json.loads(msg.payload.decode()))
+            msg_dicpy = json.loads(msg.payload.decode()) # decode from binary e converte para dicionario python
+            print(f"Matricula recebida é ({msg_dicpy['matricula']})")
 
-            #if(msg_dicpy['matricula'] == "20000216"):
+            if(msg_dicpy['matricula'] == 20000216):
             #   print(f"Minha matricula foi recebida ({msg_dicpy['matricula']})")
                 # ack
-            #  client.publish(topic_ack, ack())
+                client.publish(topic_ack, ack(msg_dicpy))
+            else:
+                print("Nao é minha vez!")
 
     # faz efetivamente a inscrição no tópico
     client.subscribe(topic)
